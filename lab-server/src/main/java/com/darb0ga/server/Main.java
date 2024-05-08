@@ -14,7 +14,6 @@ public class Main {
         String filename = args[0];
         try {
             CollectionManager.readCollection(filename);
-            System.out.println(CollectionManager.getCollection());
             Server servach = new Server();
             servach.run();
         }catch (SocketException e){

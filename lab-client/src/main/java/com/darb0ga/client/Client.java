@@ -25,14 +25,12 @@ public final class Client {
     private final InetSocketAddress serverAddress;
     private final Selector selector;
 
-    public Client(String hostname) throws IOException {
+    public Client() throws IOException {
         scriptExecution = new ScriptManager(this);
         channel = DatagramChannel.open();
         clientID = UUID.randomUUID();
         serverAddress = new InetSocketAddress(InetAddress.getLocalHost(), 2227);
         channel.configureBlocking(false);
-        //или тут надо сделать
-        //serverAddress = new InetSocketAddress(hostname, 2227);
         selector = Selector.open();
     }
 
@@ -55,22 +53,23 @@ public final class Client {
 
 
     public void run() throws IOException {
-        //channel.socket().bind(null);
+        channel.socket().bind(null);
         channel.register(selector, SelectionKey.OP_READ);
-        System.out.println("Успешное подключение к серверу:  " + serverAddress);
         ByteBuffer buffer = ByteBuffer.allocate(10_000);
-        Reply answer = null;
+        Reply answer;
+        Scanner scan = null;
+        String comm = null;
         while (true) {
-            Scanner scan = null;
-            String comm = null;
-
+            answer = receive(buffer);
+            for (String element : answer.getResponse()) {
+                System.out.println(element);
+            }
             try {
                 scan = new Scanner(System.in);
                 comm = scan.next();
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
-
             try {
                 Command command = CommandBuilder(comm);
                 if (command instanceof Add || command instanceof AddIfMin || command instanceof UpdateID || command instanceof RemoveByID) {
@@ -82,7 +81,6 @@ public final class Client {
                         throw new RuntimeException(e);
                     }
                 }
-
                 if (command instanceof Exit) {
                     command.execute("", null, false);
 
@@ -90,19 +88,11 @@ public final class Client {
                 if (command instanceof ExecuteScript) {
                     assert comm != null;
                     scriptExecution.executeFile(comm.trim().split(" ")[1]);
-                    //continue;
-
                 } else {
                     sendCommand(command);
                 }
-
             } catch (ArrayIndexOutOfBoundsException | NumberFormatException e) {
                 System.out.println(e.getMessage());
-                //continue;
-            }
-            answer = receive(buffer);
-            for (String element : answer.getResponse()) {
-                System.out.println(element);
             }
         }
 
@@ -119,7 +109,7 @@ public final class Client {
         Reply reply = new Reply();
         buffer.clear();
         try {
-            SocketAddress address = channel.receive(buffer);
+            channel.receive(buffer);
             Reply message = serializer.deserialize(buffer.array());
             return message;
         } catch (Exception e) {

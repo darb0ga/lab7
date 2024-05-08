@@ -25,17 +25,14 @@ public class Server {
     public Command readMessage(byte[] buffer, DatagramPacket datagramPacket) throws IOException {
         Serializer serializer = new Serializer();
         datagramSocket.receive(datagramPacket);
-        Object newPacket = serializer.deserialize(buffer);
         ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
         byteStream.write((byte[]) buffer);
         return (Command) serializer.deserialize(byteStream.toByteArray());
-        //return (T) newPacket;
     }
 
     public void run() throws IOException {
         byte[] bytes = new byte[10_000];
         DatagramPacket packet = new DatagramPacket(bytes, bytes.length, datagramSocket.getInetAddress(), port);
-        System.out.println("Запущен клиент: " + port);
         CollectionManager manager = new CollectionManager();
         manager.readCollection("1.xml");
         while (true) {
@@ -64,6 +61,7 @@ public class Server {
             try {
                 reply = command.execute(command.getAddition(), scanner, fileReading);
                 Commander.history.add(command.getName());
+                System.out.println(Commander.getCommandHistory());
                 return reply;
             } catch (FileNotFoundException | CommandRuntimeException e) {
                 reply.addResponse(e.getMessage());
@@ -76,7 +74,6 @@ public class Server {
                 reply.addResponse(ex.getMessage());
                 return reply;
             }
-
         }
         return reply;
     }
