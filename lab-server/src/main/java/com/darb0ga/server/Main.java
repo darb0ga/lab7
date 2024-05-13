@@ -7,13 +7,11 @@ import java.net.SocketException;
 
 public class Main {
     public static void main(String[] args){
-        if (args.length == 0) {
+        if (args.length != 0) {
             System.out.println("Необходимо указать имя файла. Невозможно запустить приложение");
             System.exit(1);
         }
-        String filename = args[0];
         try {
-            CollectionManager.readCollection(filename);
             Server servach = new Server();
             servach.run();
         }catch (SocketException e){

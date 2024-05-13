@@ -3,6 +3,7 @@ package com.darb0ga.client;
 import com.darb0ga.common.collection.LabWork;
 import com.darb0ga.common.collection.Models.AskLabWork;
 import com.darb0ga.common.commands.*;
+import com.darb0ga.common.exceptions.CommandRuntimeException;
 import com.darb0ga.common.managers.Commander;
 import com.darb0ga.common.util.Reply;
 import com.darb0ga.common.util.Serializer;
@@ -16,6 +17,7 @@ import java.nio.channels.Selector;
 import java.util.Arrays;
 import java.util.Scanner;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 public final class Client {
     private final UUID clientID;
@@ -46,30 +48,21 @@ public final class Client {
             comm.setAddition(addition);
             return comm;
         } catch (Exception e) {
-            System.err.println(e.getMessage());
-            return null;
+            System.err.println("Произошли ошибки при работе с введенной командой: " + name);
         }
+        return null;
     }
 
 
-    public void run() throws IOException {
+    public void run() throws IOException, InterruptedException {
         channel.socket().bind(null);
         channel.register(selector, SelectionKey.OP_READ);
         ByteBuffer buffer = ByteBuffer.allocate(10_000);
-        Reply answer;
-        Scanner scan = null;
+        Reply answer = null;
+        Scanner scan = new Scanner(System.in);
         String comm = null;
         while (true) {
-            answer = receive(buffer);
-            for (String element : answer.getResponse()) {
-                System.out.println(element);
-            }
-            try {
-                scan = new Scanner(System.in);
-                comm = scan.next();
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-            }
+            comm = scan.next();
             try {
                 Command command = CommandBuilder(comm);
                 if (command instanceof Add || command instanceof AddIfMin || command instanceof UpdateID || command instanceof RemoveByID) {
@@ -81,6 +74,7 @@ public final class Client {
                         throw new RuntimeException(e);
                     }
                 }
+
                 if (command instanceof Exit) {
                     command.execute("", null, false);
 
@@ -88,12 +82,24 @@ public final class Client {
                 if (command instanceof ExecuteScript) {
                     assert comm != null;
                     scriptExecution.executeFile(comm.trim().split(" ")[1]);
-                } else {
+                    //continue;
+
+                } else if (command != null) {
                     sendCommand(command);
                 }
+
             } catch (ArrayIndexOutOfBoundsException | NumberFormatException e) {
                 System.out.println(e.getMessage());
+                continue;
             }
+            TimeUnit.SECONDS.sleep(1);
+            //урааа вроде как починили дело в задержке было сука как знала
+            answer = receive(buffer);
+            for (String element : answer.getResponse()) {
+                System.out.println(element);
+            }
+            // ну тут надо как то очисить буффер после пред смс а то плохо как то
+            // ну и убрать вывод с клиента и сервера
         }
 
 
@@ -102,6 +108,7 @@ public final class Client {
         Serializer serializer = new Serializer();
         byte[] buffer = serializer.serialize(command);
         channel.send(ByteBuffer.wrap(buffer), serverAddress);
+        System.out.println("отправили" + command);
     }
 
     public Reply receive(ByteBuffer buffer) {
@@ -109,11 +116,10 @@ public final class Client {
         Reply reply = new Reply();
         buffer.clear();
         try {
-            channel.receive(buffer);
+            SocketAddress address = channel.receive(buffer);
             Reply message = serializer.deserialize(buffer.array());
             return message;
         } catch (Exception e) {
-            reply.addResponse(e.getMessage());
             return reply;
         }
     }

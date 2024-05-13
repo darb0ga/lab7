@@ -9,6 +9,6 @@ import java.io.IOException;
  */
 public class CommandRuntimeException extends IOException {
     public CommandRuntimeException(String message){
-        super(message);
+        super("Ошибка в работе с введенной командой");
     }
 }
