@@ -18,11 +18,11 @@ public class FilterStartsWithName extends Command {
 
     @Override
     public Reply execute(String args, Scanner scan, boolean isFile) {
+        Reply reply = new Reply();
         if (args.isBlank()) throw new IllegalParamException("String");
-        CollectionManager.getCollection().stream()
-                .filter(sp -> sp.getName().startsWith(args.trim()))
-                .forEach(System.out::println);
-        return new Reply();
+        reply.addResponse(CollectionManager.getCollection().stream()
+                .filter(sp -> sp.getName().startsWith(args.trim())).toString());
+        return reply;
 
     }
 }

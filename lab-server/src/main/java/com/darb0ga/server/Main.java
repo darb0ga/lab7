@@ -1,6 +1,5 @@
 package com.darb0ga.server;
 
-import com.darb0ga.common.managers.CollectionManager;
 
 import java.io.IOException;
 import java.net.SocketException;

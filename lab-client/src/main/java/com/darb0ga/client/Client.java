@@ -62,9 +62,12 @@ public final class Client {
         Scanner scan = new Scanner(System.in);
         String comm = null;
         while (true) {
-            comm = scan.next();
+            comm = scan.nextLine();
+            Command command = CommandBuilder(comm);
+            if(command == null){
+                continue;
+            }
             try {
-                Command command = CommandBuilder(comm);
                 if (command instanceof Add || command instanceof AddIfMin || command instanceof UpdateID || command instanceof RemoveByID) {
                     AskLabWork newLaba = new AskLabWork();
                     try {
@@ -74,7 +77,6 @@ public final class Client {
                         throw new RuntimeException(e);
                     }
                 }
-
                 if (command instanceof Exit) {
                     command.execute("", null, false);
 
@@ -83,23 +85,20 @@ public final class Client {
                     assert comm != null;
                     scriptExecution.executeFile(comm.trim().split(" ")[1]);
                     //continue;
-
                 } else if (command != null) {
                     sendCommand(command);
                 }
 
+                TimeUnit.MILLISECONDS.sleep(20);
+                answer = receive(buffer);
+                for (String element : answer.getResponse()) {
+                    System.out.println(element);
+                }
+
             } catch (ArrayIndexOutOfBoundsException | NumberFormatException e) {
                 System.out.println(e.getMessage());
-                continue;
+                buffer = ByteBuffer.allocate(10_000);
             }
-            TimeUnit.SECONDS.sleep(1);
-            //урааа вроде как починили дело в задержке было сука как знала
-            answer = receive(buffer);
-            for (String element : answer.getResponse()) {
-                System.out.println(element);
-            }
-            // ну тут надо как то очисить буффер после пред смс а то плохо как то
-            // ну и убрать вывод с клиента и сервера
         }
 
 
@@ -108,7 +107,6 @@ public final class Client {
         Serializer serializer = new Serializer();
         byte[] buffer = serializer.serialize(command);
         channel.send(ByteBuffer.wrap(buffer), serverAddress);
-        System.out.println("отправили" + command);
     }
 
     public Reply receive(ByteBuffer buffer) {
@@ -116,9 +114,8 @@ public final class Client {
         Reply reply = new Reply();
         buffer.clear();
         try {
-            SocketAddress address = channel.receive(buffer);
-            Reply message = serializer.deserialize(buffer.array());
-            return message;
+            channel.receive(buffer);
+            return serializer.deserialize(buffer.array());
         } catch (Exception e) {
             return reply;
         }

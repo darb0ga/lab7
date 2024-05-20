@@ -21,26 +21,6 @@
         </person>
     </labwork>
     <labwork>
-        <id>18348624</id>
-        <name>testing</name>
-        <coordinates>
-            <x>1.0</x>
-            <y>2</y>
-        </coordinates>
-        <creationDate>2020-02-27 00:00:01</creationDate>
-        <minimalpoint>1.0</minimalpoint>
-        <difficulty>EASY</difficulty>
-        <person>
-            <name>Pop</name>
-            <height>195.0</height>
-            <location>
-                <x>50</x>
-                <y>12.5</y>
-                <name>park</name>
-            </location>
-        </person>
-    </labwork>
-    <labwork>
         <id>18340624</id>
         <name>math project</name>
         <coordinates>
@@ -77,6 +57,26 @@
                 <x>100</x>
                 <y>125.0</y>
                 <name>office</name>
+            </location>
+        </person>
+    </labwork>
+    <labwork>
+        <id>18348624</id>
+        <name>testing</name>
+        <coordinates>
+            <x>1.0</x>
+            <y>2</y>
+        </coordinates>
+        <creationDate>2020-02-27 00:00:01</creationDate>
+        <minimalpoint>1.0</minimalpoint>
+        <difficulty>EASY</difficulty>
+        <person>
+            <name>Pop</name>
+            <height>195.0</height>
+            <location>
+                <x>50</x>
+                <y>12.5</y>
+                <name>park</name>
             </location>
         </person>
     </labwork>

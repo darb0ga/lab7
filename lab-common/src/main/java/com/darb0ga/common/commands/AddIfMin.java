@@ -37,6 +37,7 @@ public class AddIfMin extends Command {
                 reply.addResponse("Элемент больше минимального! Невозможно добавить(");
             }
         } catch (Exception invalidForm) {
+            System.out.println(invalidForm.getMessage());
             reply.addResponse("Поля объекта не валидны! Объект не создан!");
         }
         return reply;

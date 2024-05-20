@@ -41,10 +41,10 @@ public class Server {
         DatagramPacket packet = new DatagramPacket(bytes, bytes.length, datagramSocket.getInetAddress(), port);
         while (true) {
             Command command = readMessage(packet);
-            System.out.println(command);
-            Reply replyToClient = commandExecution(command, false, null);
-            System.out.println(replyToClient.getResponse());
-            sendMessage(replyToClient, packet.getSocketAddress());
+            if (command != null) {
+                Reply replyToClient = commandExecution(command, false, null);
+                sendMessage(replyToClient, packet.getSocketAddress());
+            }
         }
     }
 
@@ -55,7 +55,6 @@ public class Server {
 //            byte[] array = serializer.serialize(buffer);
             DatagramPacket datagramPacket2 = new DatagramPacket(buffer, buffer.length, socketAddress);
             datagramSocket.send(datagramPacket2);
-            System.out.println("отправили ответ" + replyToClient.getResponse());
 
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -65,19 +64,17 @@ public class Server {
     private Reply commandExecution(Command command, boolean fileReading, Scanner scanner) {
         Reply reply = new Reply();
         history.add(command.getName());
-        System.out.println(history);
+        if (command instanceof History) {
+            reply.addResponse("Введенные команды: ");
+            for (String element : history.subList(Math.max(0, history.size() - 14), history.size())) {
+                reply.addResponse(element);
+            }
+            return reply;
+        }
         if (!command.getAddition().isEmpty()) {
             try {
-                if(command instanceof History){
-                    reply.addResponse("Введенные команды: ");
-                    for (String element: history.subList(Math.max(0, history.size() - 14), history.size())){
-                        reply.addResponse(element);
-                    }
-                }else {
-                    reply = command.execute(command.getAddition(), scanner, fileReading);
-                    System.out.println(history);
-                    return reply;
-                }
+                reply = command.execute(command.getAddition(), scanner, fileReading);
+                return reply;
             } catch (FileNotFoundException | CommandRuntimeException e) {
                 reply.addResponse(e.getMessage());
                 return reply;

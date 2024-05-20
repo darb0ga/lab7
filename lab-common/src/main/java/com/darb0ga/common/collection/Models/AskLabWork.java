@@ -13,7 +13,7 @@ import java.util.Scanner;
 public class AskLabWork extends Model<LabWork> {
     @Override
     public LabWork build(Scanner scan, boolean isFile) {
-        String name = askString("название лабораторной работы", scan, isFile);
+        String name = askString("название лабораторной раtоты", scan, isFile);
         Coordinates coord = new AskCoordinates().build(scan, isFile);
         Float minpoint = askFloat("минимальное значение(должно быть больше 0)", true, scan, isFile);
         Difficulty en = (Difficulty) askEnum("сложность работы", Difficulty.values(), scan, isFile);
