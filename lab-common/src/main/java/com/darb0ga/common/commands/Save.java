@@ -17,11 +17,13 @@ public class Save extends Command{
 
     @Override
     public Reply execute(String args, Scanner scan, boolean isFile) {
+        Reply reply = new Reply();
         try {
             CollectionManager.saveCollection();
+            reply.addResponse("Сохранение прошло успешно!");
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            reply.addResponse(e.getMessage());
         }
-        return new Reply();
+        return reply;
     }
 }

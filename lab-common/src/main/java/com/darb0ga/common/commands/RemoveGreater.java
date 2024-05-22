@@ -1,7 +1,6 @@
 package com.darb0ga.common.commands;
 
 import com.darb0ga.common.collection.LabWork;
-import com.darb0ga.common.collection.Models.AskLabWork;
 import com.darb0ga.common.exceptions.IllegalParamException;
 import com.darb0ga.common.managers.CollectionManager;
 import com.darb0ga.common.util.Reply;
@@ -24,7 +23,7 @@ public class RemoveGreater extends Command {
         Reply reply = new Reply();
         if (!args.isBlank()) throw new IllegalParamException("*ничего*");
         try {
-            LabWork newElement = new AskLabWork().build(scan, isFile);
+            LabWork newElement = getAssertNewLab();
             reply.addResponse("Создание заданного объекта для сравнения LabWork окончено успешно!");
             Collection<LabWork> toRemove = null;
             for (LabWork el : CollectionManager.getCollection()) {

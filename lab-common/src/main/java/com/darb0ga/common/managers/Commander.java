@@ -38,7 +38,6 @@ public class Commander implements Serializable {
         commands.put("print_field_ascending_author", new PrintFieldAscendingAuthor());
         commands.put("remove_by_id", new RemoveByID());
         commands.put("remove_greater", new RemoveGreater());
-        commands.put("save", new Save());
         commands.put("show", new Show());
         commands.put("update_id", new UpdateID());
     }

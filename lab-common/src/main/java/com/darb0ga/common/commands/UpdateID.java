@@ -24,16 +24,15 @@ public class UpdateID extends Command {
 
     @Override
     public Reply execute(String args, Scanner scan, boolean isFile) throws IllegalParamException, NoSuchIDException {
+        Reply reply = new Reply();
         try {
             LabWork lab = CollectionManager.findById(Integer.parseInt(args.trim()));
             if (lab != null) {
                 CollectionManager.updateById(new AskLabWork().build(scan, isFile), Integer.parseInt(args.trim()));
-            } else {
-                throw new NoSuchIDException();
             }
         } catch (NumberFormatException e) {
-            throw new IllegalParamException("int");
+            reply.addResponse(new IllegalParamException("int").getMessage());
         }
-        return new Reply();
+        return reply;
     }
 }

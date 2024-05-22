@@ -3,7 +3,6 @@ package com.darb0ga.client;
 import com.darb0ga.common.collection.LabWork;
 import com.darb0ga.common.collection.Models.AskLabWork;
 import com.darb0ga.common.commands.*;
-import com.darb0ga.common.exceptions.CommandRuntimeException;
 import com.darb0ga.common.managers.Commander;
 import com.darb0ga.common.util.Reply;
 import com.darb0ga.common.util.Serializer;
@@ -14,7 +13,6 @@ import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
-import java.util.Arrays;
 import java.util.Scanner;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -58,17 +56,15 @@ public final class Client {
         channel.socket().bind(null);
         channel.register(selector, SelectionKey.OP_READ);
         ByteBuffer buffer = ByteBuffer.allocate(10_000);
-        Reply answer = null;
         Scanner scan = new Scanner(System.in);
-        String comm = null;
         while (true) {
-            comm = scan.nextLine();
+            String comm = scan.nextLine();
             Command command = CommandBuilder(comm);
             if(command == null){
                 continue;
             }
             try {
-                if (command instanceof Add || command instanceof AddIfMin || command instanceof UpdateID || command instanceof RemoveByID) {
+                if (command instanceof Add || command instanceof AddIfMin || command instanceof UpdateID || command instanceof RemoveGreater) {
                     AskLabWork newLaba = new AskLabWork();
                     try {
                         LabWork laba = newLaba.build(scan, false);
@@ -82,7 +78,6 @@ public final class Client {
 
                 }
                 if (command instanceof ExecuteScript) {
-                    assert comm != null;
                     scriptExecution.executeFile(comm.trim().split(" ")[1]);
                     //continue;
                 } else if (command != null) {
@@ -90,7 +85,7 @@ public final class Client {
                 }
 
                 TimeUnit.MILLISECONDS.sleep(20);
-                answer = receive(buffer);
+                Reply answer = receive(buffer);
                 for (String element : answer.getResponse()) {
                     System.out.println(element);
                 }

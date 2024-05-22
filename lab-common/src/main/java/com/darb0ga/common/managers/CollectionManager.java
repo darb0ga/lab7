@@ -27,11 +27,11 @@ public class CollectionManager {
         return collection;
     }
 
-    public static void removeById(long id) {
-        if (getById(id) != null) {
-            collection.remove(getById(id));
-        } else {
-            throw new NoSuchIDException();
+    public static boolean removeById(long id) {
+        try{
+            return collection.remove(findById(id));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -41,7 +41,7 @@ public class CollectionManager {
                 return lab;
             }
         }
-        throw new NoSuchIDException();
+        return null;
     }
 
     public static void updateById(LabWork newLab, int id) throws NoSuchIDException {
@@ -116,12 +116,6 @@ public class CollectionManager {
         collection.add(lab);
     }
 
-    public static LabWork getById(long id) {
-        for (LabWork element : collection) {
-            if (element.getId() == id) return element;
-        }
-        return null;
-    }
 
     public static void removeElements(Collection<LabWork> toRemove) {
         collection.removeAll(toRemove);

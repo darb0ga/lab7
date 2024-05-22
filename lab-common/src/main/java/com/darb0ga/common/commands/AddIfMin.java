@@ -1,7 +1,6 @@
 package com.darb0ga.common.commands;
 
 import com.darb0ga.common.collection.LabWork;
-import com.darb0ga.common.collection.Models.AskLabWork;
 import com.darb0ga.common.exceptions.IllegalParamException;
 import com.darb0ga.common.managers.CollectionManager;
 import com.darb0ga.common.util.Reply;
@@ -24,8 +23,7 @@ public class AddIfMin extends Command {
         Reply reply = new Reply();
         if (!args.isBlank()) throw new IllegalParamException("*ничего*");
         try {
-            reply.addResponse("Создание объекта LabWork");
-            LabWork newElement = new AskLabWork().build(scan, isFile);
+            LabWork newElement = getAssertNewLab();
             reply.addResponse("Создание объекта LabWork окончено успешно!");
             if (newElement.compareTo(Objects.requireNonNull(CollectionManager.getCollection().stream()
                     .filter(Objects::nonNull)

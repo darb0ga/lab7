@@ -9,6 +9,12 @@ public class Main {
         if (args.length != 0) {
             System.out.println("Необходимо указать имя файла. Невозможно запустить приложение");
             System.exit(1);
+            // так же надо переделать filter_starts_with_name and add_if_min and execute_script and remove_greater
+            //in add_if_min почему то говорит что обьект сохранен после след команды
+            //remove_greater - почему то при попытке удалитт набор подходящий сервер ложиться
+            //filter_starts_with_name - ну тут просто без коммов
+            //execute_script - .... вот и помер дед максииим
+
         }
         try {
             Server servach = new Server();

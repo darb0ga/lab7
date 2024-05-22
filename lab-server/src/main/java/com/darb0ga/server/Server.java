@@ -6,7 +6,6 @@ import com.darb0ga.common.commands.ExecuteScript;
 import com.darb0ga.common.commands.History;
 import com.darb0ga.common.exceptions.CommandRuntimeException;
 import com.darb0ga.common.managers.CollectionManager;
-import com.darb0ga.common.managers.Commander;
 import com.darb0ga.common.util.Reply;
 import com.darb0ga.common.util.Serializer;
 
@@ -15,7 +14,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.*;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
 public class Server {

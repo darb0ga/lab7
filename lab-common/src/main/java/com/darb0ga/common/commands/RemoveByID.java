@@ -4,6 +4,7 @@ import com.darb0ga.common.exceptions.IllegalParamException;
 import com.darb0ga.common.managers.CollectionManager;
 import com.darb0ga.common.util.Reply;
 
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 /**
@@ -20,9 +21,13 @@ public class RemoveByID extends Command{
         Reply reply = new Reply();
         try {
             int id = Integer.parseInt(args.trim());
-            CollectionManager.removeById(id);
-        } catch (NumberFormatException e) {
-            throw new IllegalParamException("int");
+            if(CollectionManager.removeById(id)){
+                reply.addResponse("Элемент с id " + args.trim() + " удален");
+            }else{
+                reply.addResponse("Элемент с id " + args.trim() + " отсутствует в коллекции");
+            }
+        } catch (NumberFormatException | NoSuchElementException e) {
+            reply.addResponse("Ошибка при чтении id");
         }
         return reply;
     }
