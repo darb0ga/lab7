@@ -1,9 +1,11 @@
 package com.darb0ga.common.commands;
 
+import com.darb0ga.common.collection.LabWork;
 import com.darb0ga.common.exceptions.IllegalParamException;
 import com.darb0ga.common.managers.CollectionManager;
 import com.darb0ga.common.util.Reply;
-
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -19,9 +21,16 @@ public class FilterStartsWithName extends Command {
     @Override
     public Reply execute(String args, Scanner scan, boolean isFile) {
         Reply reply = new Reply();
-        if (args.isBlank()) throw new IllegalParamException("String");
-        reply.addResponse(CollectionManager.getCollection().stream()
-                .filter(sp -> sp.getName().startsWith(args.trim())).toString());
+        if (args.isBlank()) {
+            reply.addResponse(new IllegalParamException("String").toString());
+            return reply;
+        }
+        List<LabWork> coll = new LinkedList<>();
+        CollectionManager.getCollection().stream()
+                .filter(sp -> sp.getName().startsWith(args.trim())).forEach(coll::add);
+        for(LabWork el: coll){
+            reply.addResponse(el.toString());
+        }
         return reply;
 
     }

@@ -24,7 +24,6 @@ public class AddIfMin extends Command {
         if (!args.isBlank()) throw new IllegalParamException("*ничего*");
         try {
             LabWork newElement = getAssertNewLab();
-            reply.addResponse("Создание объекта LabWork окончено успешно!");
             if (newElement.compareTo(Objects.requireNonNull(CollectionManager.getCollection().stream()
                     .filter(Objects::nonNull)
                     .min(LabWork::compareTo)

@@ -17,4 +17,6 @@ public final class Reply implements Serializable{
     public void addResponse(String message) {
         response.add(message);
     }
+
+
 }

@@ -18,7 +18,6 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 public final class Client {
-    private final UUID clientID;
     private Commander commander = new Commander();
     private ScriptManager scriptExecution;
     private final DatagramChannel channel;
@@ -28,7 +27,6 @@ public final class Client {
     public Client() throws IOException {
         scriptExecution = new ScriptManager(this);
         channel = DatagramChannel.open();
-        clientID = UUID.randomUUID();
         serverAddress = new InetSocketAddress(InetAddress.getLocalHost(), 2227);
         channel.configureBlocking(false);
         selector = Selector.open();
@@ -89,8 +87,9 @@ public final class Client {
                 for (String element : answer.getResponse()) {
                     System.out.println(element);
                 }
-
-            } catch (ArrayIndexOutOfBoundsException | NumberFormatException e) {
+            }catch(ArrayIndexOutOfBoundsException ex){
+                System.out.println("Произошли ошибки при работе с аргументами");
+            } catch (NumberFormatException e) {
                 System.out.println(e.getMessage());
                 buffer = ByteBuffer.allocate(10_000);
             }

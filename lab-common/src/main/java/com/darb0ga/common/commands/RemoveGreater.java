@@ -31,8 +31,12 @@ public class RemoveGreater extends Command {
                     toRemove.add(el);
                 }
             }
-            CollectionManager.removeElements(toRemove);
-            reply.addResponse("Объекты успешно удалены");
+            if (toRemove != null) {
+                CollectionManager.removeElements(toRemove);
+                reply.addResponse("Объекты успешно удалены");
+            } else {
+                reply.addResponse("Нет объектов, удовлетворяющих фильтру");
+            }
         } catch (NumberFormatException e) {
             throw new IllegalParamException("int");
         }

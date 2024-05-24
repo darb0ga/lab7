@@ -41,7 +41,7 @@ public class PrintFieldAscendingAuthor extends Command {
 
             reply.addResponse("Поле Author в порядке убывания:");
             for (Person person : sortedPerson) {
-                reply.addResponse(person + "\n");
+                reply.addResponse(person.toString());
             }
         }
         return reply;
