@@ -2,7 +2,6 @@ package com.darb0ga.server;
 
 
 import com.darb0ga.common.commands.Command;
-import com.darb0ga.common.commands.ExecuteScript;
 import com.darb0ga.common.commands.History;
 import com.darb0ga.common.exceptions.CommandRuntimeException;
 import com.darb0ga.common.managers.CollectionManager;

@@ -9,6 +9,7 @@ public class Main {
         if (args.length != 0) {
             System.out.println("Необходимо указать имя файла. Невозможно запустить приложение");
             System.exit(1);
+            //при нахождении рекурсии почему то после вывода ошибки аыводит предыдущ буфер команду
             }
         try {
             Server servach = new Server();
