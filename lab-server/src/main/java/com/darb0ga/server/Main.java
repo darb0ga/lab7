@@ -17,7 +17,6 @@ public class Main {
         }catch (SocketException e){
             System.exit(1);
         } catch (IOException e) {
-            System.out.println(e.getMessage());
             throw new RuntimeException(e);
         }
 
