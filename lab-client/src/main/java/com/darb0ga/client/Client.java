@@ -18,7 +18,6 @@ import java.nio.channels.Selector;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 public final class Client {
@@ -61,7 +60,7 @@ public final class Client {
         while (true) {
             String comm = scan.nextLine();
             Command command = CommandBuilder(comm);
-            if(command == null){
+            if (command == null) {
                 continue;
             }
             try {
@@ -79,8 +78,13 @@ public final class Client {
 
                 }
                 if (command instanceof ExecuteScript) {
-                    scriptExecution.executeFile(comm.trim().split(" ")[1]);
-                    //continue;
+                    try {
+                        scriptExecution.executeFile(comm.trim().split(" ")[1]);
+                    } catch (RuntimeException e) {
+                        System.out.println(e.getMessage());
+                        continue;
+                    }
+                    continue;
                 } else if (command != null) {
                     sendCommand(command);
                 }
@@ -88,7 +92,7 @@ public final class Client {
                 TimeUnit.MILLISECONDS.sleep(30);
                 Reply answer = receive(buffer);
                 answer.getResponse().forEach(System.out::println);
-            }catch(ArrayIndexOutOfBoundsException ex){
+            } catch (ArrayIndexOutOfBoundsException ex) {
                 System.out.println("Произошли ошибки при работе с аргументами");
             } catch (NumberFormatException e) {
                 System.out.println(e.getMessage());
@@ -98,6 +102,7 @@ public final class Client {
 
 
     }
+
     public void sendCommand(Command command) throws IOException {
         Serializer serializer = new Serializer();
         Header header = new Header(0, 0);

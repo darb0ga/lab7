@@ -9,8 +9,8 @@ import com.darb0ga.common.util.Header;
 import com.darb0ga.common.util.Packet;
 import com.darb0ga.common.util.Reply;
 import com.darb0ga.common.util.Serializer;
-//import org.apache.logging.log4j.LogManager;
-//import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
@@ -26,7 +26,7 @@ public class Server {
     private ArrayList<String> history = new ArrayList<>();
     private final Serializer serializer = new Serializer();
     private final int BUFFER_LENGTH = 1000;
-    //private static final Logger logger = LogManager.getLogger(Server.class);
+    private static final Logger logger = LogManager.getLogger(Server.class);
 
     public Server() throws IOException {
         datagramSocket = new DatagramSocket(port);
@@ -66,12 +66,16 @@ public class Server {
     }
 
     public void run() throws IOException {
+        logger.info("Сервер запущен");
         byte[] bytes = new byte[10_000];
         DatagramPacket packet = new DatagramPacket(bytes, bytes.length, datagramSocket.getInetAddress(), port);
         while (true) {
             Command command = readMessage(packet, bytes);
+            logger.info("Чтение команды");
             if (command != null) {
+                logger.info("Выполнение команды");
                 Reply replyToClient = commandExecution(command, false, null);
+                logger.info("Отправка ответа");
                 sendMessage(replyToClient, packet.getSocketAddress());
             }
         }

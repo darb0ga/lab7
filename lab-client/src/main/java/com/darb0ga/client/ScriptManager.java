@@ -34,8 +34,7 @@ public class ScriptManager {
                 String[] command = current_line.split(" ");
                 if (command[0].equals("execute_script")) {
                     if (ScannerManager.recurse(command[1])) {
-                        System.err.println(new RuntimeException("Рекурсия! Повторно вызывается файл " + command[1]).getMessage());
-                        return;
+                        throw new RuntimeException("Найдена рекурсия! Повторно вызывается файл " + command[1]);
                     }
                 }
                 try {

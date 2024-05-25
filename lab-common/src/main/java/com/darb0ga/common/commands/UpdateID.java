@@ -29,9 +29,10 @@ public class UpdateID extends Command {
             LabWork lab = CollectionManager.findById(Integer.parseInt(args.trim()));
             if (lab != null) {
                 CollectionManager.updateById(new AskLabWork().build(scan, isFile), Integer.parseInt(args.trim()));
+                reply.addResponse("Внесены изменения в обьект с id " + args.trim());
             }
         } catch (NumberFormatException e) {
-            reply.addResponse(new IllegalParamException("int").getMessage());
+            reply.addResponse("Ошибка при работе с id");
         }
         return reply;
     }
