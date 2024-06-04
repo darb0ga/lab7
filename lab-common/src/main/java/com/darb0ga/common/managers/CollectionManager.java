@@ -27,34 +27,6 @@ public class CollectionManager {
         return collection;
     }
 
-    public static boolean removeById(long id) {
-        try{
-            return collection.remove(findById(id));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static LabWork findById(long id) throws NoSuchIDException {
-        for (LabWork lab : collection) {
-            if (lab.getId() == id) {
-                return lab;
-            }
-        }
-        return null;
-    }
-
-    public static void updateById(LabWork newLab, int id) throws NoSuchIDException {
-        LabWork lab = findById(id);
-        lab.setMinimalPoint(newLab.getMinimalPoint());
-        lab.setCreationDate(new Date());
-        lab.setAuthor(newLab.getAuthor());
-        lab.setName(newLab.getName());
-        lab.setCoordinates(newLab.getCoordinates());
-        lab.setDifficulty(newLab.getDifficulty());
-
-    }
-
     public static void readCollection(String path) throws IOException{
         file = new File(path);
         StandardConsole console = new StandardConsole(false);
@@ -112,12 +84,4 @@ public class CollectionManager {
         }
     }
 
-    public static void addElement(LabWork lab) {
-        collection.add(lab);
-    }
-
-
-    public static void removeElements(Collection<LabWork> toRemove) {
-        collection.removeAll(toRemove);
-    }
 }

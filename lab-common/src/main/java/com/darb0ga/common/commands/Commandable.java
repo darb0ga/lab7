@@ -2,6 +2,7 @@ package com.darb0ga.common.commands;
 
 
 import com.darb0ga.common.exceptions.*;
+import com.darb0ga.common.managers.DBManager;
 import com.darb0ga.common.util.Reply;
 
 import java.io.FileNotFoundException;
@@ -14,6 +15,6 @@ import java.util.Scanner;
  */
 public interface Commandable {
     String getName();
-    Reply execute(String arg, Scanner scan, boolean isFile) throws CommandRuntimeException, FileNotFoundException;
+    Reply execute(String arg, Scanner scan, boolean isFile, DBManager manager) throws CommandRuntimeException, FileNotFoundException;
     String getInfo();
 }

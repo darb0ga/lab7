@@ -3,6 +3,7 @@ package com.darb0ga.common.commands;
 
 
 import com.darb0ga.common.managers.Commander;
+import com.darb0ga.common.managers.DBManager;
 import com.darb0ga.common.managers.ScannerManager;
 import com.darb0ga.common.util.Reply;
 
@@ -19,10 +20,10 @@ import java.util.Scanner;
 public class ExecuteScript extends Command {
 
     public ExecuteScript() {
-        super("execute_script", "считать и исполнить скрипт из указанного файла. В скрипте содержатся команды в таком же виде, в котором их вводит пользователь в интерактивном режиме.");
+        super("execute_script", "считать и исполнить скрипт из указанного файла. В скрипте содержатся команды в таком же виде, в котором их вводит пользователь в интерактивном режиме.", false);
     }
     @Override
-    public Reply execute(String file, Scanner scan, boolean isFile) throws FileNotFoundException {
+    public Reply execute(String file, Scanner scan, boolean isFile, DBManager manager) throws FileNotFoundException {
         try {
             if (!(new File(file).isFile())) {
                 throw new IOException("/dev/null");
@@ -42,9 +43,9 @@ public class ExecuteScript extends Command {
                 try {
                     Commander.history.add(command[0]);
                     if (command.length > 1) {
-                        Commander.execute(command[0], command[1], scanner, true);
+                        Commander.execute(command[0], command[1], scanner, true, manager);
                     } else {
-                        Commander.execute(command[0], "", scanner, true);
+                        Commander.execute(command[0], "", scanner, true, manager);
                     }
                 } catch (Exception e) {
                     System.out.println(e.getMessage());

@@ -3,6 +3,7 @@ package com.darb0ga.common.commands;
 
 import com.darb0ga.common.exceptions.IllegalParamException;
 import com.darb0ga.common.managers.Commander;
+import com.darb0ga.common.managers.DBManager;
 import com.darb0ga.common.util.Reply;
 
 import java.util.Collection;
@@ -15,11 +16,11 @@ import java.util.Scanner;
  */
 public class Help extends Command {
     public Help() {
-        super("help", "вывести справку по доступным командам");
+        super("help", "вывести справку по доступным командам", false);
     }
 
     @Override
-    public Reply execute(String args, Scanner scan, boolean isFile) throws IllegalParamException {
+    public Reply execute(String args, Scanner scan, boolean isFile, DBManager manager) throws IllegalParamException {
         Reply reply = new Reply();
         if (!args.isBlank()) throw new IllegalParamException("*ничего*");
         Commander commander = new Commander();

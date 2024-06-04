@@ -1,9 +1,11 @@
 package com.darb0ga.common.collection;
 
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
 
 import java.io.Serializable;
 
@@ -11,18 +13,21 @@ import java.io.Serializable;
  * Класс координат
  * @author darya
  */
-@Getter
-@XmlAccessorType(XmlAccessType.FIELD)
+
 public class Coordinates implements Serializable {
     /**
      * координата по x
      */
-    @XmlElement(name="x", required = true)
+    @Getter
+    @Column(nullable = false)
+    @NonNull
     private Float x; //Поле не может быть null
     /**
      * координата по y
      */
-    @XmlElement(name="y", required = true)
+    @Getter
+    @Column(nullable = false)
+    @NonNull
     private Integer y; //Поле не может быть null
     public Coordinates(float x, int y){
         this.x = x;

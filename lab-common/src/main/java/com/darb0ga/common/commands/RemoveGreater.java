@@ -3,6 +3,7 @@ package com.darb0ga.common.commands;
 import com.darb0ga.common.collection.LabWork;
 import com.darb0ga.common.exceptions.IllegalParamException;
 import com.darb0ga.common.managers.CollectionManager;
+import com.darb0ga.common.managers.DBManager;
 import com.darb0ga.common.util.Reply;
 
 import java.util.Collection;
@@ -15,24 +16,24 @@ import java.util.Scanner;
  */
 public class RemoveGreater extends Command {
     public RemoveGreater() {
-        super("remove_greater", "удалить из коллекции все элементы, превышающие заданный");
+        super("remove_greater", "удалить из коллекции все элементы, превышающие заданный", true);
     }
 
     @Override
-    public Reply execute(String args, Scanner scan, boolean isFile) throws IllegalParamException {
+    public Reply execute(String args, Scanner scan, boolean isFile, DBManager manager) throws IllegalParamException {
         Reply reply = new Reply();
         if (!args.isBlank()) throw new IllegalParamException("*ничего*");
         try {
             LabWork newElement = getAssertNewLab();
             reply.addResponse("Создание заданного объекта для сравнения LabWork окончено успешно!");
             Collection<LabWork> toRemove = null;
-            for (LabWork el : CollectionManager.getCollection()) {
+            for (LabWork el : manager.getCollection()) {
                 if (newElement.compareTo(el) < 0) {
                     toRemove.add(el);
                 }
             }
             if (toRemove != null) {
-                CollectionManager.removeElements(toRemove);
+                manager.removeElements(toRemove);
                 reply.addResponse("Объекты успешно удалены");
             } else {
                 reply.addResponse("Нет объектов, удовлетворяющих фильтру");

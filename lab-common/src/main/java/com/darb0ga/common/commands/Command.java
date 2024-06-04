@@ -1,6 +1,7 @@
 package com.darb0ga.common.commands;
 
 import com.darb0ga.common.collection.LabWork;
+import com.darb0ga.common.managers.DBManager;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -19,6 +20,8 @@ public abstract class Command implements Commandable, Serializable {
     private String addition;
     private final String description;
     private LabWork assertNewLab;
+    @Getter
+    private boolean labNeeded;
 
     @Override
     public String getName() {
@@ -30,9 +33,10 @@ public abstract class Command implements Commandable, Serializable {
         return description;
     }
 
-    public Command(String name, String description) {
+    public Command(String name, String description, boolean labNeeded) {
         this.name = name;
         this.description = description;
+        this.labNeeded = labNeeded;
     }
 
     @Override

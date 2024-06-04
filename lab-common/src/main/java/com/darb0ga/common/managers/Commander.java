@@ -42,11 +42,11 @@ public class Commander implements Serializable {
         commands.put("update_id", new UpdateID());
     }
 
-    public static void execute(String name, String args, Scanner scan, boolean isFile) throws NoSuchCommandException, CommandRuntimeException {
+    public static void execute(String name, String args, Scanner scan, boolean isFile, DBManager man) throws NoSuchCommandException, CommandRuntimeException {
         Command command = commands.get(name);
         if (command == null) throw new NoSuchCommandException();
         try {
-            command.execute(args.trim(), scan, isFile);
+            command.execute(args.trim(), scan, isFile, man);
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }

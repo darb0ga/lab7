@@ -3,6 +3,7 @@ package com.darb0ga.common.commands;
 import com.darb0ga.common.collection.LabWork;
 import com.darb0ga.common.exceptions.IllegalParamException;
 import com.darb0ga.common.managers.CollectionManager;
+import com.darb0ga.common.managers.DBManager;
 import com.darb0ga.common.util.Reply;
 
 import java.util.Scanner;
@@ -14,18 +15,18 @@ import java.util.Scanner;
  */
 public class MinByCreationDate extends Command {
     public MinByCreationDate() {
-        super("min_by_creation_date", "вывести любой объект из коллекции, значение поля creationDate которого является минимальным");
+        super("min_by_creation_date", "вывести любой объект из коллекции, значение поля creationDate которого является минимальным", false);
     }
 
     @Override
-    public Reply execute(String args, Scanner scan, boolean isFile) throws IllegalParamException {
+    public Reply execute(String args, Scanner scan, boolean isFile, DBManager manager) throws IllegalParamException {
         Reply reply = new Reply();
         if (!args.isBlank()) throw new IllegalParamException("*ничего*");
-        if (CollectionManager.getCollection().isEmpty()) {
+        if (manager.getCollection().isEmpty()) {
             reply.addResponse("Коллекция пуста.");
         } else {
             LabWork minDate = null;
-            for (LabWork lab : CollectionManager.getCollection()) {
+            for (LabWork lab : manager.getCollection()) {
                 if ((minDate == null) || (lab.getCreationDate().compareTo(minDate.getCreationDate())) < 0) {
                     minDate = lab;
                 }

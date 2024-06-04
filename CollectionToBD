@@ -6,8 +6,8 @@ CREATE TABLE IF NOT EXISTS users (
 
 CREATE TABLE IF NOT EXISTS coordinates(
     id SERIAL PRIMARY KEY,
-    coordinate_x DOUBLE PRECISION NOT NULL,
-    coordinate_y INTEGER NOT NULL
+    x DOUBLE PRECISION NOT NULL,
+    y INTEGER NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS location(
@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS location(
 CREATE TABLE IF NOT EXISTS person(
     id SERIAL PRIMARY KEY,
     person_name TEXT NOT NULL,
-    person_height DOUBLE PRECISION,
+    person_height DOUBLE PRECISION CHECK (person_height > 0),
     location INTEGER REFERENCES location ON DELETE CASCADE
 );
 
@@ -31,7 +31,12 @@ CREATE TABLE IF NOT EXISTS labwork(
     creation_date TIMESTAMP NOT NULL,
     minimal_point DOUBLE PRECISION NOT NULL,
     difficulty VARCHAR(255) NOT NULL CHECK (difficulty IN ('VERY_EASY', 'EASY', 'HARD', 'HOPELESS', 'TERRIBLE')),
-    person INTEGER NOT NULL REFERENCES person ON DELETE CASCADE,
-    owner_id INTEGER NOT NULL REFERENCES users ON DELETE CASCADE
+    person INTEGER NOT NULL REFERENCES person,
+    owner_id INTEGER NOT NULL REFERENCES users
 );
 
+INSERT INTO coordinates(x, y)
+VALUES
+    (1, 1),
+    (45, 78),
+    (2.5, 10);

@@ -8,9 +8,12 @@ import com.darb0ga.common.util.Reply;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.*;
 import java.sql.*;
+import java.util.Scanner;
 
 public class Server {
     private final int port = 2226;
@@ -20,31 +23,32 @@ public class Server {
     public Server() throws IOException, SQLException, ClassNotFoundException {
         datagramSocket = new DatagramSocket(port);
         CollectionManager.readCollection("1.xml");
-        connectToDB();
     }
 
-    private void connectToDB() throws SQLException {
-        String url = "jdbc:postgresql://localhost:8080/studs";
-        String login = "s408308";
-        String password = "Gmw1sU78KDUUtgIl";
-        DBManager dataBase = new DBManager(url, login, password);
-        Connection connection = DriverManager.getConnection(url, login, password);
-        Statement statement = connection.createStatement();
-        ResultSet resultSet = statement.executeQuery("SELECT * FROM labwork");
-        while (resultSet.next()) {
-            System.out.println(resultSet.getObject(2));
-            // получение и обработка данных
+    private void connectToDB() {
+        String login = null, password = null, url = null;
+        try {
+            Scanner signInScanner = new Scanner(new File("admin"));
+            login = signInScanner.nextLine().trim();
+            password = signInScanner.nextLine().trim();
+            url = signInScanner.nextLine().trim();
+        } catch (FileNotFoundException e) {
+            logger.error("Проблема с входными данными для подключения к БД. Ошибка: " + e.getMessage());
+            logger.error("Завершение работы.");
+            System.exit(-1);
         }
-        resultSet.close();
-        statement.close();
-        connection.close();
+
+        logger.info("Создание менеджера базы данных.");
+        DBManager dbManager = new DBManager(url, login, password);
+        dbManager.connectTOBD();
     }
 
 
-    public void run() throws IOException {
+    public void run() throws IOException, SQLException {
         logger.info("Сервер запущен");
         byte[] bytes = new byte[10_000];
         DatagramPacket packet = new DatagramPacket(bytes, bytes.length, datagramSocket.getInetAddress(), port);
+        connectToDB();
         ClientCommunication newClient = new ClientCommunication(datagramSocket);
         while (true) {
             Command command = newClient.readMessage(packet, bytes);

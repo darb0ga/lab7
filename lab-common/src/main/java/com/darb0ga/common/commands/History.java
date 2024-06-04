@@ -2,6 +2,7 @@ package com.darb0ga.common.commands;
 
 import com.darb0ga.common.exceptions.IllegalParamException;
 import com.darb0ga.common.managers.Commander;
+import com.darb0ga.common.managers.DBManager;
 import com.darb0ga.common.util.Reply;
 
 import java.util.ArrayList;
@@ -13,11 +14,11 @@ import java.util.Scanner;
  */
 public class History extends Command {
     public History(){
-        super("history", "вывести последние 14 команд(без их аргументов)");
+        super("history", "вывести последние 14 команд(без их аргументов)", false);
     }
 
     @Override
-    public Reply execute(String args, Scanner scan, boolean isFile) throws IllegalParamException{
+    public Reply execute(String args, Scanner scan, boolean isFile, DBManager manager) throws IllegalParamException{
         Reply reply = new Reply();
         if (!args.isBlank()) throw new IllegalParamException("*ничего*");
         ArrayList<String> history = Commander.getCommandHistory();

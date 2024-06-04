@@ -1,11 +1,11 @@
 package com.darb0ga.common.collection;
 
-import com.darb0ga.common.managers.DateAdapter;
+import jakarta.persistence.*;
 import com.darb0ga.common.managers.IDGenerator;
 import com.darb0ga.common.managers.Validatable;
 import jakarta.xml.bind.annotation.*;
-import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 
 import java.io.Serializable;
@@ -18,44 +18,61 @@ import java.util.Objects;
  */
 @Getter
 @Setter
-@XmlRootElement(name = "labwork")
-@XmlAccessorType(XmlAccessType.FIELD)
+@Entity
+@Table(name = "labwork")
 public class LabWork implements Validatable, Serializable {
     /**
      * id
      */
-    @XmlElement(name="id", required = true)
+    @Getter
+    @Setter
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @NonNull
+
     private int id; //Значение поля должно быть больше 0, Значение этого поля должно быть уникальным, Значение этого поля должно генерироваться автоматически
     /**
      * Название лабораторной
      */
-    @XmlElement(name="name", required = true)
+    @Getter
+    @Column(nullable = false)
+    @NonNull
     private String name; //Поле не может быть null, Строка не может быть пустой
     /**
      * Координаты работы
      */
-    @XmlElement(name="coordinates", required = true)
+    @Getter
+    @Column(nullable = false)
+    @NonNull
     private Coordinates coordinates; //Поле не может быть null
     /**
      * Дата создания работы
      */
-    @XmlElement(name = "creationDate", required = true)
-    @XmlJavaTypeAdapter(DateAdapter.class)
+    @Getter
+    @Setter
+    @Column(nullable = false)
+    @NonNull
     private java.util.Date creationDate; //Поле не может быть null, Значение этого поля должно генерироваться автоматически
     /**
      * Минимальное значение прогресса в работе
      */
-    @XmlElement(name="minimalpoint", required = true)
+    @Getter
+    @Column(nullable = false)
+    @NonNull
     private float minimalPoint; //Значение поля должно быть больше 0
     /**
      * Сложность работы
      */
-    @XmlElement(name="difficulty", required = true)
+    @Getter
+    @Column(nullable = false)
+    @NonNull
     private Difficulty difficulty; //Поле не может быть null
     /**
      * Создатель работы
      */
-    @XmlElement(name="person", required = true)
+    @Getter
+    @Column(nullable = false)
+    @NonNull
     private Person author; //Поле не может быть null
 
     public LabWork(String name, Coordinates coordinates, float minimalPoint, Difficulty difficulty, Person author){
@@ -82,12 +99,12 @@ public class LabWork implements Validatable, Serializable {
 
     @Override
     public String toString() {
-        return "LabWork{id: " + id + ", " +
-                "name: " + name + ", " +
-                "coordinates: " + coordinates + ", " +
-                "creationDate: " + creationDate + ", " +
-                "minimalPoint: " + minimalPoint + ", " +
-                "difficulty: " + difficulty + ", " +
+        return "LabWork\t{id: " + id + "\t " +
+                "name: " + name + "\t " +
+                "coordinates: " + coordinates + "\t " +
+                "creationDate: " + creationDate + "\t " +
+                "minimalPoint: " + minimalPoint + "\t " +
+                "difficulty: " + difficulty + "\t " +
                 "author: " +  author + "}";
     }
     @Override

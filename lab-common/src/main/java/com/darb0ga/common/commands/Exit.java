@@ -2,6 +2,7 @@ package com.darb0ga.common.commands;
 
 import com.darb0ga.common.commands.Command;
 import com.darb0ga.common.exceptions.IllegalParamException;
+import com.darb0ga.common.managers.DBManager;
 import com.darb0ga.common.util.Reply;
 
 import java.util.Scanner;
@@ -12,11 +13,11 @@ import java.util.Scanner;
  */
 public class Exit extends Command {
     public Exit() {
-        super("exit", "завершить программу(без сохранения в файл)");
+        super("exit", "завершить программу(без сохранения в файл)", false);
     }
 
     @Override
-    public Reply execute(String args, Scanner scan, boolean isFile) throws IllegalParamException{
+    public Reply execute(String args, Scanner scan, boolean isFile, DBManager manager) throws IllegalParamException{
         if (!args.isBlank()) throw new IllegalParamException("*ничего*");
         System.out.println("Выход из программы");
         System.exit(0);

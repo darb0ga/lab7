@@ -1,9 +1,9 @@
 package com.darb0ga.common.collection;
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlElement;
-import lombok.AllArgsConstructor;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 
 import java.io.Serializable;
@@ -12,24 +12,28 @@ import java.io.Serializable;
  * Класс локации
  * @author darya
  */
-@Getter
-@Setter
-@XmlAccessorType(XmlAccessType.FIELD)
+
 public class Location implements Serializable {
     /**
      * локация по x
      */
-    @XmlElement(name="x", required = true)
+    @Getter
+    @Column(nullable = false)
+    @NonNull
     private Integer x; //Поле не может быть null
     /**
      * локация по y
      */
-    @XmlElement(name="y", required = true)
+    @Getter
+    @Column(nullable = false)
+    @NonNull
     private Float y; //Поле не может быть null
     /**
      * название локации
      */
-    @XmlElement(name="name", required = true, nillable = true)
+    @Getter
+    @Column(nullable = true)
+    @NonNull
     private String name; //Поле может быть null
 
     public Location(int x, float y, String name){

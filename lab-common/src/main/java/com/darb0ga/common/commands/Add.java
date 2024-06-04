@@ -15,16 +15,16 @@ import java.util.Scanner;
  */
 public class Add extends Command{
     public Add(){
-        super("add", "добавить новый элемент в коллекцию");
+        super("add", "добавить новый элемент в коллекцию", true);
     }
 
     @Override
-    public Reply execute(String args, Scanner scan, boolean isFile) throws IllegalParamException {
+    public Reply execute(String args, Scanner scan, boolean isFile, DBManager manager) throws IllegalParamException {
         Reply reply = new Reply();
         if (!args.isBlank()) throw new IllegalParamException("*ничего*");
         try {
             LabWork lab0 = getAssertNewLab();
-            CollectionManager.addElement(lab0);
+            manager.addElement(lab0);
             reply.addResponse("Создание объекта LabWork окончено успешно!");
         } catch (Exception e) {
             reply.addResponse(e.getMessage());

@@ -39,7 +39,7 @@ public class ScriptManager {
                 }
                 try {
                     Command currentCommand = client.CommandBuilder(current_line);
-                    if (currentCommand instanceof Add || currentCommand instanceof AddIfMin || currentCommand instanceof UpdateID || currentCommand instanceof RemoveByID) {
+                    if (currentCommand.isLabNeeded()){
                         AskLabWork newLaba = new AskLabWork();
                         try {
                             LabWork laba = newLaba.build(scanner, true);
@@ -50,7 +50,8 @@ public class ScriptManager {
                     }
 
                     if (currentCommand instanceof Exit) {
-                        currentCommand.execute(null, null, true);
+                        System.out.println("Выход из программы");
+                        System.exit(0);
 
                     }
                     if (currentCommand instanceof ExecuteScript) {

@@ -4,6 +4,7 @@ import com.darb0ga.common.collection.LabWork;
 import com.darb0ga.common.collection.Models.AskLabWork;
 import com.darb0ga.common.commands.*;
 import com.darb0ga.common.managers.Commander;
+import com.darb0ga.common.managers.DBManager;
 import com.darb0ga.common.util.Header;
 import com.darb0ga.common.util.Packet;
 import com.darb0ga.common.util.Reply;
@@ -15,7 +16,6 @@ import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
-import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
@@ -27,6 +27,7 @@ public final class Client {
     private final DatagramChannel channel;
     private InetSocketAddress serverAddress;
     private final Selector selector;
+    private  boolean isExitRequested;
     private final int BUFFER_LENGTH = 1000;
 
     public Client() throws IOException{
@@ -60,16 +61,20 @@ public final class Client {
         channel.socket().bind(null);
         ByteBuffer buffer = ByteBuffer.allocate(10_000);
         Scanner scan = new Scanner(System.in);
-        while (true) {
+        String line = scan.nextLine();
+        if (line.trim().toLowerCase().equals("exit")) {
+            System.out.println("Выход из программы");
+            System.exit(0);
+        }
+        login(scan);
+        while (isExitRequested) {
             String comm = scan.nextLine();
             Command command = CommandBuilder(comm);
             if (command == null) {
                 continue;
             }
             try {
-                if (command instanceof Add || command instanceof AddIfMin || command instanceof UpdateID || command instanceof RemoveGreater) {
-                    //вот тут надо переделатт это и сказать чтобы передавался аргумент в поле команды типа надо ли нам вводить
-                    //эту ебущую лабу или нет
+                if (command.isLabNeeded()) {
                     AskLabWork newLaba = new AskLabWork();
                     try {
                         LabWork laba = newLaba.build(scan, false);
@@ -79,8 +84,8 @@ public final class Client {
                     }
                 }
                 if (command instanceof Exit) {
-                    command.execute("", null, false);
-
+                    System.out.println("Выход из программы");
+                    System.exit(0);
                 }
                 if (command instanceof ExecuteScript) {
                     try {
@@ -105,6 +110,30 @@ public final class Client {
             }
         }
 
+
+    }
+
+    private void login(Scanner scan) throws IOException {
+        System.out.println("Необходимо войти в базу данных. Введите register или login");
+        String comm = scan.nextLine().trim();
+        while (!((comm.equals("register")) || (comm.equals("login")))){
+            System.out.println("Необходимо войти в базу данных. Введите register или login");
+            comm = scan.nextLine().trim();
+        }
+        if(comm == "register"){
+            System.out.println("Введите ваше имя пользователя:");
+            String name = scan.nextLine();
+            System.out.println("Введите ваш пароль:");
+            String passwd = scan.nextLine();
+            // надо переделать тут жопааа
+            sendCommand(new Register());
+        }else{
+            System.out.println("Введите ваше имя пользователя:");
+            String name = scan.nextLine();
+            System.out.println("Введите ваш пароль:");
+            String passwd = scan.nextLine();
+            sendCommand(new Login());
+        }
 
     }
 

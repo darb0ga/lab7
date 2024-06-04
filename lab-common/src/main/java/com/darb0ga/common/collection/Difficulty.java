@@ -10,8 +10,6 @@ import java.io.Serializable;
  * Класс энума сложности
  * @author darya
  */
-@Getter
-@AllArgsConstructor
 public enum Difficulty implements Serializable {
     VERY_EASY,
     EASY,
