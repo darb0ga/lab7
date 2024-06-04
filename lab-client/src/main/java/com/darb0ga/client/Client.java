@@ -15,6 +15,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
@@ -28,11 +29,13 @@ public final class Client {
     private final Selector selector;
     private final int BUFFER_LENGTH = 1000;
 
-    public Client() throws IOException {
+    public Client() throws IOException{
         scriptExecution = new ScriptManager(this);
         channel = DatagramChannel.open();
         selector = Selector.open();
     }
+
+
 
     public Command CommandBuilder(String args) throws IOException {
 
@@ -65,6 +68,8 @@ public final class Client {
             }
             try {
                 if (command instanceof Add || command instanceof AddIfMin || command instanceof UpdateID || command instanceof RemoveGreater) {
+                    //вот тут надо переделатт это и сказать чтобы передавался аргумент в поле команды типа надо ли нам вводить
+                    //эту ебущую лабу или нет
                     AskLabWork newLaba = new AskLabWork();
                     try {
                         LabWork laba = newLaba.build(scan, false);

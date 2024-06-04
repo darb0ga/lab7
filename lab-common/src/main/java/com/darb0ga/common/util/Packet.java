@@ -15,4 +15,5 @@ public class Packet implements Serializable {
         this.header = header;
         this.pieceOfBuffer = pieceOfBuffer;
     }
+
 }

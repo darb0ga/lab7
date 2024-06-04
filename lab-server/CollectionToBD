@@ -1,0 +1,37 @@
+CREATE TABLE IF NOT EXISTS users (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(255) NOT NULL UNIQUE,
+    password_hash BYTEA NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS coordinates(
+    id SERIAL PRIMARY KEY,
+    coordinate_x DOUBLE PRECISION NOT NULL,
+    coordinate_y INTEGER NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS location(
+    id SERIAL PRIMARY KEY,
+    loc_x INTEGER NOT NULL,
+    loc_y FLOAT NOT NULL,
+    loc_name TEXT
+);
+
+CREATE TABLE IF NOT EXISTS person(
+    id SERIAL PRIMARY KEY,
+    person_name TEXT NOT NULL,
+    person_height DOUBLE PRECISION,
+    location INTEGER REFERENCES location ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS labwork(
+    id SERIAL PRIMARY KEY,
+    name TEXT NOT NULL,
+    coordinate INTEGER NOT NULL REFERENCES coordinates ON DELETE CASCADE,
+    creation_date TIMESTAMP NOT NULL,
+    minimal_point DOUBLE PRECISION NOT NULL,
+    difficulty VARCHAR(255) NOT NULL CHECK (difficulty IN ('VERY_EASY', 'EASY', 'HARD', 'HOPELESS', 'TERRIBLE')),
+    person INTEGER NOT NULL REFERENCES person ON DELETE CASCADE,
+    owner_id INTEGER NOT NULL REFERENCES users ON DELETE CASCADE
+);
+

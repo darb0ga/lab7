@@ -1,0 +1,10 @@
+add
+name
+4
+4
+789
+HARD
+4
+false
+false
+execute_script test.txt
