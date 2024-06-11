@@ -13,15 +13,15 @@ public class Register extends Command {
 
     @Override
     public Reply execute(String args, Scanner scan, boolean isFile, DBManager man) throws IllegalParamException {
-        if (args.isBlank()) throw new IllegalParamException("UserName & password");
+        if (!args.isBlank()) throw new IllegalParamException("UserName & password");
         Reply response = new Reply();
-        if (man.findUser(//../){
-            response.addResponse("Такой пользователь уже существует. Воспользуйтесь командой login.");
+        if (man.findUser(getRequestOwner().getName().trim())>0){
+            response.addResponse("Такой пользователь уже существует. Воспользуйтесь командой login");
             return response;
         }
         try {
-            //man.();
-        } catch (ConnectionException e) {
+            man.addUser(getRequestOwner());
+        } catch (Exception e) {
             Reply response1 = man.reconnect(response, 1);
             if (response1==null){
                 return execute(args, scan, isFile, man);
@@ -31,6 +31,7 @@ public class Register extends Command {
         }
         response.addResponse("Создан новый аккаунт.");
         response.addResponse("Выполнен вход в аккаунт.");
+
         return response;
     }
 }

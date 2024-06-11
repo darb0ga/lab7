@@ -20,13 +20,12 @@ public class Info extends Command {
     public Reply execute(String args, Scanner scan, boolean isFile, DBManager manager) throws IllegalParamException{
         Reply reply = new Reply();
         if (!args.isBlank()) throw new IllegalParamException("*ничего*");
-        if (manager.getCollection().isEmpty()){
+        if (manager.getMyLabs().isEmpty()){
             reply.addResponse("Коллекция пока что пуста. Тип коллекции: " + CollectionManager.getCollection().getClass());
         }
         else {
-            reply.addResponse("Тип коллекции: " + CollectionManager.getCollection().getClass());
-            reply.addResponse("Количество элементов: " + CollectionManager.getCollection().size());
-            reply.addResponse("Дата инициализации: " + CollectionManager.initializationTime);
+            reply.addResponse("Тип коллекции: " + manager.getMyLabs().getClass());
+            reply.addResponse("Количество элементов: " + manager.getMyLabs().size());
         }
         return reply;
     }

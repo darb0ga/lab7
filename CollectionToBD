@@ -1,7 +1,13 @@
+DROP TABLE coordinates CASCADE;
+DROP TABLE person CASCADE;
+DROP TABLE location CASCADE;
+DROP TABLE labwork CASCADE;
+DROP TABLE users;
+
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     username VARCHAR(255) NOT NULL UNIQUE,
-    password_hash BYTEA NOT NULL
+    password_hash text NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS coordinates(
@@ -28,7 +34,7 @@ CREATE TABLE IF NOT EXISTS labwork(
     id SERIAL PRIMARY KEY,
     name TEXT NOT NULL,
     coordinate INTEGER NOT NULL REFERENCES coordinates ON DELETE CASCADE,
-    creation_date TIMESTAMP NOT NULL,
+    creation_date DATE NOT NULL,
     minimal_point DOUBLE PRECISION NOT NULL,
     difficulty VARCHAR(255) NOT NULL CHECK (difficulty IN ('VERY_EASY', 'EASY', 'HARD', 'HOPELESS', 'TERRIBLE')),
     person INTEGER NOT NULL REFERENCES person,
@@ -40,3 +46,23 @@ VALUES
     (1, 1),
     (45, 78),
     (2.5, 10);
+
+INSERT INTO location(loc_x, loc_y, loc_name)
+VALUES
+    (1, 1, 'desert'),
+    (15, 7, 'office'),
+    (2, 10.8, 'coworking');
+
+INSERT INTO users(username, password_hash)
+VALUES
+    ('dasha', '8fa345448347573ebd6aaa974ddb62f2');
+
+INSERT INTO person(person_name, person_height, location)
+VALUES
+    ('Bob', 175, 1),
+    ('Helen', 155, 3);
+
+
+INSERT INTO labwork(name, coordinate, creation_date, minimal_point, difficulty, person, owner_id)
+VALUES
+    ('project', 1, '2020-07-01', 4, 'HARD', 2, 1);

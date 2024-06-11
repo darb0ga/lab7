@@ -2,7 +2,6 @@ package com.darb0ga.common.commands;
 
 
 import com.darb0ga.common.collection.LabWork;
-import com.darb0ga.common.collection.Models.AskLabWork;
 import com.darb0ga.common.exceptions.IllegalParamException;
 import com.darb0ga.common.managers.*;
 import com.darb0ga.common.util.Reply;
@@ -24,7 +23,7 @@ public class Add extends Command{
         if (!args.isBlank()) throw new IllegalParamException("*ничего*");
         try {
             LabWork lab0 = getAssertNewLab();
-            manager.addElement(lab0);
+            manager.modificateElement(lab0, getRequestOwner(), false, -1);
             reply.addResponse("Создание объекта LabWork окончено успешно!");
         } catch (Exception e) {
             reply.addResponse(e.getMessage());

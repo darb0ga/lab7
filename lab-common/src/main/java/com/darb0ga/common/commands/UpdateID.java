@@ -29,8 +29,15 @@ public class UpdateID extends Command {
         try {
             LabWork lab = manager.findById(Integer.parseInt(args.trim()));
             if (lab != null) {
-                manager.updateById(new AskLabWork().build(scan, isFile), Integer.parseInt(args.trim()));
+
+                if (getRequestOwner().getID()!=(lab.getOwner_id())){
+                    reply.addResponse("У вас нет прав на моцификацию элемента");
+                    return reply;
+                }else{
+
+                manager.updateById(getAssertNewLab(), Integer.parseInt(args.trim()));
                 reply.addResponse("Внесены изменения в обьект с id " + args.trim());
+            }
             }
         } catch (NumberFormatException e) {
             reply.addResponse("Ошибка при работе с id");

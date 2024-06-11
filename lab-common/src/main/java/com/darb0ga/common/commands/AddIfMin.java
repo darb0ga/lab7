@@ -2,7 +2,6 @@ package com.darb0ga.common.commands;
 
 import com.darb0ga.common.collection.LabWork;
 import com.darb0ga.common.exceptions.IllegalParamException;
-import com.darb0ga.common.managers.CollectionManager;
 import com.darb0ga.common.managers.DBManager;
 import com.darb0ga.common.util.Reply;
 
@@ -25,11 +24,12 @@ public class AddIfMin extends Command {
         if (!args.isBlank()) throw new IllegalParamException("*ничего*");
         try {
             LabWork newElement = getAssertNewLab();
-            if (newElement.compareTo(Objects.requireNonNull(manager.getCollection().stream()
+            if (newElement.compareTo(Objects.requireNonNull(manager.getMyLabs().stream()
                     .filter(Objects::nonNull)
                     .min(LabWork::compareTo)
                     .orElse(null))) <= 0) {
-                manager.addElement(newElement);
+
+                manager.modificateElement(newElement, getRequestOwner(), false, -1);
                 reply.addResponse("Объект успешно добавлен");
             } else {
                 reply.addResponse("Элемент больше минимального! Невозможно добавить(");

@@ -1,10 +1,13 @@
 package com.darb0ga.common.commands;
 
 import com.darb0ga.common.collection.LabWork;
+import com.darb0ga.common.collection.Person;
+import com.darb0ga.common.managers.AuthorsRight;
 import com.darb0ga.common.managers.DBManager;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.awt.datatransfer.Clipboard;
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -22,6 +25,7 @@ public abstract class Command implements Commandable, Serializable {
     private LabWork assertNewLab;
     @Getter
     private boolean labNeeded;
+    private AuthorsRight requestOwner;
 
     @Override
     public String getName() {
@@ -61,6 +65,6 @@ public abstract class Command implements Commandable, Serializable {
 
     @Override
     public String toString() {
-        return this.getClass().getName() + '{' + "name= " + this.getName() + ", description= " + this.getInfo() + '}';
+        return this.getClass().getName() + '{' + "name= " + this.getName() + ", description= " + this.getInfo() + ", author= " + this.getRequestOwner() + '}';
     }
 }

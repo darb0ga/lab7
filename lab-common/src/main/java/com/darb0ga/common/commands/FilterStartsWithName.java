@@ -2,7 +2,6 @@ package com.darb0ga.common.commands;
 
 import com.darb0ga.common.collection.LabWork;
 import com.darb0ga.common.exceptions.IllegalParamException;
-import com.darb0ga.common.managers.CollectionManager;
 import com.darb0ga.common.managers.DBManager;
 import com.darb0ga.common.util.Reply;
 import java.util.LinkedList;
@@ -27,7 +26,7 @@ public class FilterStartsWithName extends Command {
             return reply;
         }
         List<LabWork> coll = new LinkedList<>();
-        manager.getCollection().stream()
+        manager.getMyLabs().stream()
                 .filter(sp -> sp.getName().startsWith(args.trim())).forEach(coll::add);
         for(LabWork el: coll){
             reply.addResponse(el.toString());

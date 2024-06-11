@@ -25,6 +25,8 @@ public class Commander implements Serializable {
     public Commander() {
         commands = new LinkedHashMap<>();
 
+        commands.put("login", new Login());
+        commands.put("register", new Register());
         commands.put("add", new Add());
         commands.put("add_if_min", new AddIfMin());
         commands.put("clear", new Clear());
@@ -37,7 +39,6 @@ public class Commander implements Serializable {
         commands.put("min_by_creation_date", new MinByCreationDate());
         commands.put("print_field_ascending_author", new PrintFieldAscendingAuthor());
         commands.put("remove_by_id", new RemoveByID());
-        commands.put("remove_greater", new RemoveGreater());
         commands.put("show", new Show());
         commands.put("update_id", new UpdateID());
     }

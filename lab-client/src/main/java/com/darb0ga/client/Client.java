@@ -3,13 +3,14 @@ package com.darb0ga.client;
 import com.darb0ga.common.collection.LabWork;
 import com.darb0ga.common.collection.Models.AskLabWork;
 import com.darb0ga.common.commands.*;
+import com.darb0ga.common.managers.AuthorsRight;
 import com.darb0ga.common.managers.Commander;
-import com.darb0ga.common.managers.DBManager;
 import com.darb0ga.common.util.Header;
 import com.darb0ga.common.util.Packet;
 import com.darb0ga.common.util.Reply;
 import com.darb0ga.common.util.Serializer;
 
+import java.awt.*;
 import java.io.*;
 import java.net.*;
 import java.nio.ByteBuffer;
@@ -21,21 +22,26 @@ import java.util.Arrays;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
+import static com.darb0ga.client.HashPassword.MD2hash;
+
 public final class Client {
     private Commander commander = new Commander();
+    private String ip;
     private ScriptManager scriptExecution;
     private final DatagramChannel channel;
     private InetSocketAddress serverAddress;
     private final Selector selector;
-    private  boolean isExitRequested;
+    //private boolean isLogInto;
     private final int BUFFER_LENGTH = 1000;
+    private AuthorsRight authorization = new AuthorsRight("", "");
+    private ByteBuffer buffer = ByteBuffer.allocate(10_000);
 
-    public Client() throws IOException{
+    public Client(String ip) throws IOException {
         scriptExecution = new ScriptManager(this);
+        this.ip = ip;
         channel = DatagramChannel.open();
         selector = Selector.open();
     }
-
 
 
     public Command CommandBuilder(String args) throws IOException {
@@ -48,6 +54,7 @@ public final class Client {
         try {
             Command comm = commander.getCommands().get(name);
             comm.setAddition(addition);
+            comm.setRequestOwner(authorization);
             return comm;
         } catch (Exception e) {
             System.err.println("Произошли ошибки при работе с введенной командой: " + name);
@@ -56,23 +63,29 @@ public final class Client {
     }
 
 
-    public void run() throws IOException, InterruptedException {
+    public void start() throws IOException, InterruptedException {
         connectServer(1);
-        channel.socket().bind(null);
-        ByteBuffer buffer = ByteBuffer.allocate(10_000);
+        System.out.println("Необходимо войти в базу данных");
         Scanner scan = new Scanner(System.in);
-        String line = scan.nextLine();
-        if (line.trim().toLowerCase().equals("exit")) {
-            System.out.println("Выход из программы");
-            System.exit(0);
-        }
-        login(scan);
-        while (isExitRequested) {
-            String comm = scan.nextLine();
-            Command command = CommandBuilder(comm);
+        String comm;
+        Command command;
+        while (true) {
+            if (!authorization.isGotIn()) {
+                comm  = login(scan);
+            }
+            else {
+                comm = scan.nextLine();
+            }
+            command = CommandBuilder(comm);
+                if (command instanceof Exit) {
+                    System.out.println("Выход из программы");
+                    System.exit(0);
+                }
+
             if (command == null) {
                 continue;
             }
+            command.setRequestOwner(authorization);
             try {
                 if (command.isLabNeeded()) {
                     AskLabWork newLaba = new AskLabWork();
@@ -82,10 +95,6 @@ public final class Client {
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
-                }
-                if (command instanceof Exit) {
-                    System.out.println("Выход из программы");
-                    System.exit(0);
                 }
                 if (command instanceof ExecuteScript) {
                     try {
@@ -98,9 +107,12 @@ public final class Client {
                 } else if (command != null) {
                     sendCommand(command);
                 }
-
                 TimeUnit.MILLISECONDS.sleep(30);
                 Reply answer = receive(buffer);
+                if(answer.getResponse()!=null){
+                if(answer.getResponse().iterator().next().equals("Выполнен вход в аккаунт")){
+                    authorization.setGotIn(true);
+                }}
                 answer.getResponse().forEach(System.out::println);
             } catch (ArrayIndexOutOfBoundsException ex) {
                 System.out.println("Произошли ошибки при работе с аргументами");
@@ -108,34 +120,43 @@ public final class Client {
                 System.out.println(e.getMessage());
                 buffer = ByteBuffer.allocate(10_000);
             }
-        }
+        }}
 
 
-    }
 
-    private void login(Scanner scan) throws IOException {
-        System.out.println("Необходимо войти в базу данных. Введите register или login");
-        String comm = scan.nextLine().trim();
-        while (!((comm.equals("register")) || (comm.equals("login")))){
+
+    private String login(Scanner scan) throws IOException {
+        String comm = "";
+        while (!((comm.equals("register")) || (comm.equals("login")))) {
             System.out.println("Необходимо войти в базу данных. Введите register или login");
             comm = scan.nextLine().trim();
         }
-        if(comm == "register"){
-            System.out.println("Введите ваше имя пользователя:");
-            String name = scan.nextLine();
-            System.out.println("Введите ваш пароль:");
-            String passwd = scan.nextLine();
-            // надо переделать тут жопааа
-            sendCommand(new Register());
-        }else{
-            System.out.println("Введите ваше имя пользователя:");
-            String name = scan.nextLine();
-            System.out.println("Введите ваш пароль:");
-            String passwd = scan.nextLine();
-            sendCommand(new Login());
+        System.out.println("Введите ваше имя пользователя:");
+        String name = scan.nextLine();
+        System.out.println("Введите ваш пароль:");
+        String passwd;
+        java.io.Console console = System.console();
+        if (console != null){
+            char[] symbols = console.readPassword();
+            while (symbols.length == 0){
+                System.out.println("Введите непустой пароль:");
+                symbols = console.readPassword();
+            }
+            passwd = MD2hash(String.valueOf(symbols));
+        } else {
+            String symbols = scan.nextLine().trim();
+            while (symbols.isEmpty()){
+                System.out.println("Введите непустой пароль:");
+                symbols = scan.nextLine().trim();
+            }
+            passwd = MD2hash(symbols);
+        }
+        authorization.setName(name);
+        authorization.setPassword(passwd);
+        return comm;
         }
 
-    }
+
 
     public void sendCommand(Command command) throws IOException {
         Serializer serializer = new Serializer();
@@ -163,9 +184,9 @@ public final class Client {
             SocketAddress address = null;
             int time = 1;
             int tries = 1;
-
+            // adder for what
             while (!serverAddress.equals(address)) {
-                if (time % 100000 == 0) {
+                if (time % 5000000 == 0) {
                     connectServer(tries);
                     tries += 1;
                 }
@@ -214,10 +235,10 @@ public final class Client {
 
     public void connectServer(int connectionTries) {
         try {
-            serverAddress = new InetSocketAddress(InetAddress.getLocalHost(), 2226);
+            serverAddress = new InetSocketAddress(ip, 2226);
             channel.configureBlocking(false);
             channel.register(selector, SelectionKey.OP_READ);
-            System.out.println("Попытка подключения к серверу: " + connectionTries);
+            System.out.println("Попытка подключения к серверу №" + connectionTries);
             if (connectionTries > 2) {
                 System.out.println("Не удается подключиться к серверу");
                 System.exit(0);

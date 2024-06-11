@@ -3,13 +3,12 @@ package com.darb0ga.common.collection;
 import jakarta.persistence.*;
 import com.darb0ga.common.managers.IDGenerator;
 import com.darb0ga.common.managers.Validatable;
-import jakarta.xml.bind.annotation.*;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.sql.Date;
 import java.util.Objects;
 
 /**
@@ -52,7 +51,7 @@ public class LabWork implements Validatable, Serializable {
     @Setter
     @Column(nullable = false)
     @NonNull
-    private java.util.Date creationDate; //Поле не может быть null, Значение этого поля должно генерироваться автоматически
+    private Date creationDate; //Поле не может быть null, Значение этого поля должно генерироваться автоматически
     /**
      * Минимальное значение прогресса в работе
      */
@@ -75,16 +74,21 @@ public class LabWork implements Validatable, Serializable {
     @NonNull
     private Person author; //Поле не может быть null
 
+    @Getter
+    @Column(nullable = false)
+    @NonNull
+    private Integer owner_id;
+
     public LabWork(String name, Coordinates coordinates, float minimalPoint, Difficulty difficulty, Person author){
         this.id = IDGenerator.generate();
         this.name = name;
         this.coordinates = coordinates;
-        this.creationDate = new Date();
+        this.creationDate = new Date(System.currentTimeMillis());
         this.minimalPoint = minimalPoint;
         this.difficulty = difficulty;
         this.author = author;
     }
-    public LabWork(int id, String name, Coordinates coordinates, Date creationDate, float minimalPoint, Difficulty difficulty, Person author){
+    public LabWork(int id, String name, Coordinates coordinates, Date creationDate, float minimalPoint, Difficulty difficulty, Person author, Integer owner){
         this.id = id;
         this.name = name;
         this.coordinates = coordinates;
@@ -92,10 +96,9 @@ public class LabWork implements Validatable, Serializable {
         this.minimalPoint = minimalPoint;
         this.difficulty = difficulty;
         this.author = author;
+        this.owner_id = owner;
 
     }
-
-    public LabWork(){}
 
     @Override
     public String toString() {

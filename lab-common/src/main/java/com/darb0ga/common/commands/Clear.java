@@ -1,5 +1,6 @@
 package com.darb0ga.common.commands;
 
+import com.darb0ga.common.collection.LabWork;
 import com.darb0ga.common.exceptions.IllegalParamException;
 import com.darb0ga.common.managers.CollectionManager;
 import com.darb0ga.common.managers.DBManager;
@@ -19,7 +20,18 @@ public class Clear extends Command{
     @Override
     public Reply execute(String args, Scanner scan, boolean isFile, DBManager manager) throws IllegalParamException{
         if (!args.isBlank()) throw new IllegalParamException("*ничего*");
-        manager.clearCollection();
-        return new Reply();
+        Reply reply = new Reply();
+        if (manager.getMyLabs().isEmpty()) {
+            reply.addResponse("Коллекция и так пуста.");
+            return reply;
+        } else {
+            for (LabWork labs: manager.getMyLabs()){
+                if (Integer.valueOf(Integer.valueOf(getRequestOwner().getID()))==(labs.getOwner_id())){
+                    manager.remove(labs);
+                }
+            }
+            reply.addResponse("Коллекция очищена. Удалены только элементы, принадлежащие Вам.");
+            return reply;
+        }
     }
 }

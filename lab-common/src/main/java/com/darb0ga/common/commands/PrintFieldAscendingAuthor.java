@@ -3,7 +3,6 @@ package com.darb0ga.common.commands;
 import com.darb0ga.common.collection.LabWork;
 import com.darb0ga.common.collection.Person;
 import com.darb0ga.common.exceptions.IllegalParamException;
-import com.darb0ga.common.managers.CollectionManager;
 import com.darb0ga.common.managers.DBManager;
 import com.darb0ga.common.util.Reply;
 
@@ -26,11 +25,11 @@ public class PrintFieldAscendingAuthor extends Command {
     public Reply execute(String args, Scanner scan, boolean isFile, DBManager manager) throws IllegalParamException {
         Reply reply = new Reply();
         if (!args.isBlank()) throw new IllegalParamException("*ничего*");
-        if (manager.getCollection().isEmpty()) {
+        if (manager.getMyLabs().isEmpty()) {
             reply.addResponse("Коллекция пуста.");
         } else {
             ArrayList<Person> people = new ArrayList<>();
-            for (LabWork element : manager.getCollection()) {
+            for (LabWork element : manager.getMyLabs()) {
                 people.add(element.getAuthor());
             }
             Comparator<Person> compareByName = Comparator

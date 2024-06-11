@@ -4,7 +4,6 @@ import com.darb0ga.common.commands.Command;
 import com.darb0ga.common.commands.History;
 import com.darb0ga.common.exceptions.CommandRuntimeException;
 import com.darb0ga.common.managers.DBManager;
-import com.darb0ga.common.managers.StandardConsole;
 import com.darb0ga.common.util.Header;
 import com.darb0ga.common.util.Packet;
 import com.darb0ga.common.util.Reply;
@@ -16,39 +15,41 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.math.BigInteger;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketAddress;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ForkJoinPool;
 
-public class ClientCommunication {
+public class ClientCommunication implements Runnable {
     private static final int BUFFER_LENGTH = 10_000;
     private final DatagramSocket datagramSocket;
+    private final String file;
+    private final ExecutorService fixedPool;
+    private final ExecutorService forkJoinPool;
     private DBManager dataBase;
     private ArrayList<String> history = new ArrayList<>();
     private final Serializer serializer = new Serializer();
     private static final Logger logger = LogManager.getLogger(ClientCommunication.class);
 
-    public ClientCommunication(DatagramSocket datagramSocket) throws FileNotFoundException {
+    public ClientCommunication(DatagramSocket datagramSocket, DBManager db, String filewithdata, ExecutorService fixedPool, ForkJoinPool forkJoinPool) throws FileNotFoundException {
         this.datagramSocket = datagramSocket;
-        System.out.println(MD2hash("qwerty"));
-        Scanner scan = new Scanner(new File("admin"));
-        String name = scan.nextLine();
-        String password = scan.nextLine();
-        regUser("kdkdd", "kjdjjd");  //?
-        this.dataBase = new DBManager(scan.nextLine(), scan.nextLine(), scan.nextLine());
-        // хуйня какая то тут происходит надо переделать
-        // и типо это мы создаем мэнэджера для котого whooo??
+        this.file = filewithdata;
+        this.fixedPool = fixedPool;
+        this.forkJoinPool = forkJoinPool;
+        connectToDB();
     }
 
-    public void regUser(String name, String pswd) {
-
+    public void shutDown() {
+        dataBase.closeConnect();
+        fixedPool.shutdown();
+        forkJoinPool.shutdown();
     }
+
 
     public Command readMessage(DatagramPacket datagramPacket, byte[] buffer) throws IOException {
         datagramSocket.receive(datagramPacket);
@@ -108,7 +109,7 @@ public class ClientCommunication {
         }
     }
 
-    public Reply commandExecution(Command command, boolean fileReading, Scanner scanner) {
+    public Reply commandExecution(Command command, boolean fileReading, Scanner scanner, DBManager dbmanager) throws SQLException {
         Reply reply = new Reply();
         history.add(command.getName());
         if (command instanceof History) {
@@ -120,7 +121,7 @@ public class ClientCommunication {
         }
         if (!command.getAddition().isEmpty()) {
             try {
-                reply = command.execute(command.getAddition(), scanner, fileReading, dataBase);
+                reply = command.execute(command.getAddition(), scanner, fileReading, dbmanager);
                 return reply;
             } catch (FileNotFoundException | CommandRuntimeException e) {
                 reply.addResponse(e.getMessage());
@@ -128,7 +129,7 @@ public class ClientCommunication {
             }
         } else {
             try {
-                reply = command.execute("", scanner, fileReading, dataBase);
+                reply = command.execute("", scanner, fileReading, dbmanager);
             } catch (FileNotFoundException | CommandRuntimeException ex) {
                 reply.addResponse(ex.getMessage());
                 return reply;
@@ -137,38 +138,61 @@ public class ClientCommunication {
         return reply;
     }
 
-    /**
-     * хэшируем пароль пользователя
-    */
-    public String MD2hash(String input) {
-        try {
-            // getInstance() method is called with algorithm MD2
-            MessageDigest md = MessageDigest.getInstance("MD2");
+    @Override
+    public void run() {
+        while (true) {
+            try {
+                byte[] buffer = new byte[BUFFER_LENGTH];
+                int port = 2226;
+                DatagramPacket datagramPacket = new DatagramPacket(buffer, buffer.length, datagramSocket.getInetAddress(), port);
+                Command command;
+                try {
+                    command = readMessage(datagramPacket, buffer);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                fixedPool.execute(() -> {
 
-            // digest() method is called
-            // to calculate message digest of the input string
-            // returned as array of byte
-            byte[] messageDigest = md.digest(input.getBytes());
+                    Reply response;
+                    logger.info("Выполнение запроса. " + Thread.currentThread().getName());
+                    try {
+                        response = commandExecution(command, false, null, dataBase);
+                    } catch (SQLException e) {
+                        throw new RuntimeException(e);
+                    }
+                    forkJoinPool.execute(() -> {
+                        logger.info("Отправка ответа. " + Thread.currentThread().getName());
+                        sendMessage(response, datagramPacket.getSocketAddress());
+                    });
+                });
 
-            // Convert byte array into signum representation
-            BigInteger no = new BigInteger(1, messageDigest);
-
-            // Convert message digest into hex value
-            String hashtext = no.toString(16);
-
-            // Add preceding 0s to make it 32 bit
-            while (hashtext.length() < 32) {
-                hashtext = "0" + hashtext;
+            } catch (Exception e) {
+                logger.info(e);
+                logger.error("thread: " + Thread.currentThread().getName() + ":" + e.getMessage());
+                return;
             }
-
-            // return the HashText
-            return hashtext;
         }
 
-        // For specifying wrong message digest algorithms
-        catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
+    }
+
+    private void connectToDB() {
+        String login = null;
+        String password = null;
+        String URL = null;
+        try {
+            Scanner signInScanner = new Scanner(new File(file));
+            login = signInScanner.nextLine().trim();
+            password = signInScanner.nextLine().trim();
+            URL = signInScanner.nextLine().trim();
+        } catch (FileNotFoundException e) {
+            logger.error("Проблема с входными данными для подключения к БД. Ошибка: " + e.getMessage());
+            logger.error("Завершение работы");
+            System.exit(-1);
         }
+        dataBase = new DBManager(login, password, URL);
+        dataBase.connectTOdataBase();
+        logger.info("Менеджер базы данных создан");
     }
 }
+
 
