@@ -54,13 +54,6 @@ public class Commander implements Serializable {
 
     }
 
-    public static void addToHistory(String userCommand) {
-        history.add(userCommand);
-        if (history.size() >= 14) {
-            history.remove(0);
-        }
-    }
-
     public static ArrayList<String> getCommandHistory() {
         return history;
     }

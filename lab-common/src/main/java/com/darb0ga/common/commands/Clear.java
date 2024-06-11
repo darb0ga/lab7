@@ -26,7 +26,7 @@ public class Clear extends Command{
             return reply;
         } else {
             for (LabWork labs: manager.getMyLabs()){
-                if (Integer.valueOf(Integer.valueOf(getRequestOwner().getID()))==(labs.getOwner_id())){
+                if (getRequestOwner().getID()!=(labs.getOwner_id())){
                     manager.remove(labs);
                 }
             }

@@ -1,15 +1,5 @@
 package com.darb0ga.server;
 
-
-//короче че сказать просто из сервера надо все почти задачи сновить в клиент хуйню
-//и тут в старте сделать tread потоки какие то там
-// ну вот а уже в клиенте перезаписать метод ран и там непосредственно подкючать к бд
-//а основная ошибка то вот в чем - у меня передавалась null dbmanager кто так сделал урод да
-// короче вот так делаешь и уже в команде логина и региста все будет чики пуки
-
-//а я с вашего позволения пойду  спать потому что это уже не возможно хохо
-
-
 import com.darb0ga.common.managers.CollectionManager;
 import com.darb0ga.common.managers.DBManager;
 import org.apache.logging.log4j.LogManager;
@@ -100,26 +90,6 @@ public class Server {
             Runtime.getRuntime().addShutdownHook(closingThreads);
         }
     }
-
-
-
-//    public void run() throws IOException, SQLException {
-//        logger.info("Сервер запущен");
-//        byte[] bytes = new byte[10_000];
-//        DatagramPacket packet = new DatagramPacket(bytes, bytes.length, datagramSocket.getInetAddress(), port);
-//        connectToDB();
-//        ClientCommunication newClient = new ClientCommunication(datagramSocket, );
-//        while (true) {
-//            Command command = newClient.readMessage(packet, bytes);
-//            logger.info("Чтение команды");
-//            if (command != null) {
-//                logger.info("Выполнение команды");
-//                Reply replyToClient = newClient.commandExecution(command, false, null);
-//                logger.info("Отправка ответа");
-//                newClient.sendMessage(replyToClient, packet.getSocketAddress());
-//            }
-//        }
-//    }
 
 
 
